@@ -45,4 +45,12 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public Point getLocation() {
+        return location;
+    }
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
 }
