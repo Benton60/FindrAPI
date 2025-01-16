@@ -2,6 +2,8 @@ package com.findr.FindrAPI.entity;
 
 import jakarta.persistence.*;
 
+import java.awt.*;
+
 @Entity
 public class User {
 
@@ -14,6 +16,10 @@ public class User {
 
     @Column(nullable = false)
     private String password;
+
+    @Column
+    private Point location;
+    
 
     // Getters and Setters
     public Long getId() {
