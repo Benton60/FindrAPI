@@ -20,6 +20,10 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
+
     public User findByUsername(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         //this makes sure that the users password hash never makes it past the service layer

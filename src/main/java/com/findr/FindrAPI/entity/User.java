@@ -3,6 +3,7 @@ package com.findr.FindrAPI.entity;
 import jakarta.persistence.*;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 @Entity
 public class User {
