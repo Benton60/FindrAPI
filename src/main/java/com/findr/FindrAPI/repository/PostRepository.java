@@ -11,13 +11,14 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     @Query(value = """
-        SELECT id, title, content, ST_AsText(location) AS location,
+        SELECT id, author, description, photo_path, ST_AsText(location) AS location, likes, 
                ST_Distance_Sphere(location, ST_GeomFromText(:point)) AS distance
-        FROM posts
+        FROM post
         ORDER BY distance
         LIMIT 20
         """, nativeQuery = true)
     List<Object[]> findNearestPosts(@Param("point") String point);
+
     Optional<Post> findById(Long id);
     List<Post> findByAuthor(String author);
 }

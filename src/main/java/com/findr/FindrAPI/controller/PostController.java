@@ -17,11 +17,12 @@ public class PostController {
     @Autowired
     private PostService postService;
 
-    @PostMapping
-    public ResponseEntity<Post> post(@RequestBody Post post) {
+    @PostMapping("/createPost")
+    public ResponseEntity<Post> createPost(@RequestBody Post post) {
         Post createdPost = postService.createPost(post);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
+
     @GetMapping("/byID/{id}")
     public ResponseEntity<Post> getPostByID(@PathVariable int id) {
         Post post = postService.findById(id);
@@ -30,7 +31,6 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
     @GetMapping("/byAuthor/{author}")
     public ResponseEntity<List<Post>> getPostByAuthor(@PathVariable String author) {
         List<Post> postList = postService.findByAuthor(author);
@@ -39,9 +39,9 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @GetMapping("byLocation/")
-    public ResponseEntity<List<Post>> getPostByLocation(@RequestParam Point location) {
-        List<Post> postList = postService.findByLocation(location);
+    @GetMapping("/byLocation/{x}/{y}")
+    public ResponseEntity<List<Post>> getPostByLocation(@PathVariable int x, @PathVariable int y) {
+        List<Post> postList = postService.findByLocation(new Point(x,y));
         if (postList != null) {
             return new ResponseEntity<>(postList, HttpStatus.OK);
         }else{
