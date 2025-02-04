@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -15,16 +14,24 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
+    @PostMapping("/createUser")
     public ResponseEntity<User> createUser(@RequestBody User user) {
         user.setPassword(userService.encodePassword(user.getPassword())); // Hash the password
         User createdUser = userService.createUser(user);
         return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/byUsername/{username}")
     public ResponseEntity<User> getUser(@PathVariable String username) {
         User user = userService.findByUsername(username);
+        if (user != null) {
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/byID/{id}")
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userService.findByID(id);
         if (user != null) {
             return new ResponseEntity<>(user, HttpStatus.OK);
         }

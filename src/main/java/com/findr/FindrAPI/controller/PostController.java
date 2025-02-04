@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.util.List;
 
 @RestController
@@ -37,5 +38,14 @@ public class PostController {
             return new ResponseEntity<>(postList, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("byLocation/")
+    public ResponseEntity<List<Post>> getPostByLocation(@RequestParam Point location) {
+        List<Post> postList = postService.findByLocation(location);
+        if (postList != null) {
+            return new ResponseEntity<>(postList, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }

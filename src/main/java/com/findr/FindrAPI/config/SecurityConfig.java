@@ -15,6 +15,7 @@ public class SecurityConfig {
         http
                 .csrf().disable() // Disable CSRF for simplicity; enable in production
                 .authorizeHttpRequests()
+                .requestMatchers("/api/users/createUser").permitAll()
                 .anyRequest().authenticated() // Secure all endpoints
                 .and()
                 .httpBasic(); // Enable Basic Auth (or configure OAuth2/JWT)

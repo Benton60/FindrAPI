@@ -36,4 +36,12 @@ public class UserService {
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
+
+    public User findByID(Long id) {
+        Optional<User> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            userOptional.get().setPassword("");
+        }
+        return userOptional.orElse(null);
+    }
 }

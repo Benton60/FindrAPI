@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -44,7 +46,6 @@ public class FollowRelationshipService {
         return followRelationshipRepository.save(followRelationship);
     }
 
-
     // Delete a follow relationship
     public void deleteRelationship(Long relationshipId) throws AuthenticationException {
         User authenticatedUser = getAuthenticatedUser();
@@ -64,6 +65,24 @@ public class FollowRelationshipService {
         followRelationshipRepository.delete(relationship);
     }
 
+    public List<User> getFriends(String username) {
+        Long userID;
+        try {
+            userID = userRepository.findByUsername(username).get().getId();
+        } catch (Exception e) {
+            throw new IllegalStateException("User not found.");
+        }
+        List<FollowRelationship> friends = followRelationshipRepository.getFollowRelationshipsByFolloweeId(userID);
+        List<User> friendList = new ArrayList<>();
+        for (FollowRelationship friend : friends) {
+            try {
+                friendList.add(userRepository.findById(friend.getFollowerId()).get());
+            }catch(Exception e) {
+                followRelationshipRepository.delete(friend);
+            }
+        }
+        return friendList;
+    }
     // Helper method to get the authenticated user
     private User getAuthenticatedUser() throws AuthenticationException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -82,4 +101,6 @@ public class FollowRelationshipService {
 
         return authenticatedUserOpt.get();
     }
+
+
 }

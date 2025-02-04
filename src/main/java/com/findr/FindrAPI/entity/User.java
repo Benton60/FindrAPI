@@ -7,7 +7,12 @@ import java.util.ArrayList;
 
 @Entity
 public class User {
-
+    public User(String username, String password, Point location) {
+        this.username = username;
+        this.password = password;
+        this.location = location;
+    }
+    public User() {}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
