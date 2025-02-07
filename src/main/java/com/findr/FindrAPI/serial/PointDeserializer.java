@@ -16,6 +16,7 @@ public class PointDeserializer extends JsonDeserializer<Point> {
 
     @Override
     public Point deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        System.out.println("deserialize");
         JsonNode node = p.getCodec().readTree(p);
         double lat = node.get("latitude").asDouble();
         double lon = node.get("longitude").asDouble(); // This will now work
