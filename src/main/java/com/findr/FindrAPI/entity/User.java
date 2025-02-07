@@ -1,9 +1,12 @@
 package com.findr.FindrAPI.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.findr.FindrAPI.serial.PointDeserializer;
+import com.findr.FindrAPI.serial.PointSerializer;
 import jakarta.persistence.*;
+import org.locationtech.jts.geom.Point;
 
-import java.awt.*;
-import java.util.ArrayList;
 
 @Entity
 public class User {
@@ -24,8 +27,9 @@ public class User {
     private String password;
 
     @Column
+    @JsonSerialize(using = PointSerializer.class)
+    @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
-
     @Column
     private String email;
     @Column

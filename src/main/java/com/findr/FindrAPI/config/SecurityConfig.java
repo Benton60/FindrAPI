@@ -13,12 +13,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // Disable CSRF for simplicity; enable in production
-                .authorizeHttpRequests()
-                .requestMatchers("/api/users/createUser").permitAll()
-                .anyRequest().authenticated() // Secure all endpoints
-                .and()
-                .httpBasic(); // Enable Basic Auth (or configure OAuth2/JWT)
+                .csrf().disable()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/createUser").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(); // Enable Basic Auth
+
 
         return http.build();
     }
