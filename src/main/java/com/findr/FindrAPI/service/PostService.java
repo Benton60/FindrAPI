@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.naming.AuthenticationException;
-import java.awt.*;
+import org.locationtech.jts.geom.Point;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;

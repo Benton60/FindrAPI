@@ -2,6 +2,7 @@ package com.findr.FindrAPI.controller;
 
 
 import com.findr.FindrAPI.entity.Post;
+import com.findr.FindrAPI.service.LocationService;
 import com.findr.FindrAPI.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class PostController {
 
     @PostMapping("/createPost")
     public ResponseEntity<Post> createPost(@RequestBody Post post) {
+
         Post createdPost = postService.createPost(post);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
@@ -39,9 +41,9 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/byLocation/{x}/{y}")
-    public ResponseEntity<List<Post>> getPostByLocation(@PathVariable int x, @PathVariable int y) {
-        List<Post> postList = postService.findByLocation(new Point(x,y));
+    @GetMapping("/byLocation/{longitude}/{latitude}")
+    public ResponseEntity<List<Post>> getPostByLocation(@PathVariable Double longitude, @PathVariable Double latitude) {
+        List<Post> postList = postService.findByLocation(new LocationService().createPoint(longitude, latitude));
         if (postList != null) {
             return new ResponseEntity<>(postList, HttpStatus.OK);
         }else{

@@ -1,12 +1,12 @@
 package com.findr.FindrAPI.entity;
 
-import jakarta.annotation.Nullable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.findr.FindrAPI.serial.PointDeserializer;
+import com.findr.FindrAPI.serial.PointSerializer;
+import com.findr.FindrAPI.service.LocationService;
 import jakarta.persistence.*;
-import org.antlr.v4.runtime.misc.NotNull;
-import org.hibernate.annotations.NotFound;
-
-import java.awt.*;
-
+import org.locationtech.jts.geom.Point;
 
 @Entity
 public class Post {
@@ -25,6 +25,8 @@ public class Post {
     private String photoPath;
 
     @Column
+    @JsonSerialize(using = PointSerializer.class)
+    @JsonDeserialize(using = PointDeserializer.class)
     private Point location;
 
     @Column (nullable = false)
@@ -89,20 +91,20 @@ public class Post {
     }
 
     public static Point convertToPoint(String point){
-        Point p = new Point(0,0);
         if(point == null){
             return null;
         }
         String[] split = point.replace("POINT(","").replace(")","").split(" ");
-        p.x = (int)(Long.parseLong(split[0])*100000);
-        p.y = (int)(Long.parseLong(split[1])*100000);
-        return p;
+        //parse the point long and lat and return a point object
+        return new LocationService().createPoint((Double.parseDouble(split[0])),(Double.parseDouble(split[1])));
     }
+
     public static String convertPointToString(Point location) {
         if (location == null) {
             throw new IllegalArgumentException("Location cannot be null");
         }
-        return "POINT(" + location.getX() + " " + location.getY() + ")";
+        System.out.println("POINT(" + (location.getX() + " " + (location.getY()) + ")"));
+        return "POINT(" + (location.getX()) + " " + (location.getY()) + ")";
     }
 
 }
