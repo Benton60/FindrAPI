@@ -72,11 +72,11 @@ public class FollowRelationshipService {
         } catch (Exception e) {
             throw new IllegalStateException("User not found.");
         }
-        List<FollowRelationship> friends = followRelationshipRepository.getFollowRelationshipsByFolloweeId(userID);
+        List<FollowRelationship> friends = followRelationshipRepository.getFollowRelationshipsByFollowerId(userID);
         List<User> friendList = new ArrayList<>();
         for (FollowRelationship friend : friends) {
             try {
-                friendList.add(userRepository.findById(friend.getFollowerId()).get());
+                friendList.add(userRepository.findById(friend.getFolloweeId()).get());
             }catch(Exception e) {
                 followRelationshipRepository.delete(friend);
             }

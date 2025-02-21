@@ -20,7 +20,6 @@ public class FollowRelationship {
     }
 
     public FollowRelationship() {
-
     }
 
     public void setId(Long id) {

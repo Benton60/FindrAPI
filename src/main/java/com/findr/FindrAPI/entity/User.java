@@ -36,6 +36,8 @@ public class User {
     private int age;
     @Column
     private String name;
+    @Column
+    private String description;
 
     // Getters and Setters
     public Long getId() {
@@ -92,5 +94,13 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

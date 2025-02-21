@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface FollowRelationshipRepository extends JpaRepository<FollowRelationship, Long> {
     boolean existsByFollowerIdAndFolloweeId(Long followerId, Long followeeId);
 
-    List<FollowRelationship> getFollowRelationshipsByFollowerId(Long userID);
+    List<FollowRelationship> getFollowRelationshipsByFollowerId(Long follower_ID);
 
-    List<FollowRelationship> getFollowRelationshipsByFolloweeId(Long userID);
+    List<FollowRelationship> getFollowRelationshipsByFolloweeId(Long followee_ID);
 }

@@ -29,9 +29,15 @@ public class FileStorageService {
         }
     }
 
-    // Load file for downloading
-    public Optional<File> getFile(String filename) {
-        File file = new File(STORAGE_DIR, filename);
-        return file.exists() ? Optional.of(file) : Optional.empty();
+    public Optional<File> getFile(String subdirectory, String filename) {
+        try {
+            // Securely build the file path
+            Path filePath = Paths.get(STORAGE_DIR, subdirectory, filename).normalize();
+            File file = filePath.toFile();
+
+            return (file.exists() && file.isFile()) ? Optional.of(file) : Optional.empty();
+        } catch (Exception e) {
+            return Optional.empty(); // Fail safely
+        }
     }
 }

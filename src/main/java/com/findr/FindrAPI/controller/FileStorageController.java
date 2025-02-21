@@ -30,10 +30,10 @@ public class FileStorageController {
     }
 
     // Download a file
-    @GetMapping("/download/{filename}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String filename) {
-        Optional<File> fileOpt = fileStorageService.getFile(filename);
-
+    @GetMapping("/download/profile/{user}/{filename}")
+    public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user, @PathVariable String filename) {
+        System.out.println(user + "/" + filename);
+        Optional<File> fileOpt = fileStorageService.getFile(user, filename);
         if (fileOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
