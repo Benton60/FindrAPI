@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LocationService {
-    private final GeometryFactory geometryFactory = new GeometryFactory();
+    private static final GeometryFactory geometryFactory = new GeometryFactory();
 
-    public Point createPoint(double latitude, double longitude) {
+    public static Point createPoint(double latitude, double longitude) {
         return geometryFactory.createPoint(new Coordinate(longitude, latitude)); // (X, Y) = (Longitude, Latitude)
     }
 }

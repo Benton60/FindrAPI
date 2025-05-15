@@ -14,6 +14,7 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.naming.AuthenticationException;
 import org.locationtech.jts.geom.Point;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -45,6 +46,16 @@ public class PostService {
 
         //resave the post with the new photoPath
         return postRepository.save(savedPost);
+    }
+
+    public Post updatePost(Post post) throws AuthenticationException {
+        User authenticatedUser = getAuthenticatedUser();
+        System.out.println(authenticatedUser);
+        if(Objects.equals(authenticatedUser.getUsername(), post.getAuthor())) {
+            return postRepository.save(post);
+        }else{
+            throw new AuthenticationException();
+        }
     }
 
     public Post findById(long id) {
