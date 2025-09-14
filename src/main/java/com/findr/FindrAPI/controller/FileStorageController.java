@@ -35,7 +35,29 @@ public class FileStorageController {
         System.out.println(user + "/" + filename);
         Optional<File> fileOpt = fileStorageService.getFile(user, filename);
         if (fileOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
+        }
+
+        File file = fileOpt.get();
+        try {
+            Resource resource = new UrlResource(file.toURI());
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(Files.probeContentType(file.toPath())))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/download/post/{filePath}")
+    public ResponseEntity<Resource> downloadPost(@PathVariable String filePath) {
+        System.out.println(filePath);
+        filePath = filePath.replace(" ", "\\");
+        System.out.println(filePath);
+        Optional<File> fileOpt = fileStorageService.getFile(filePath);
+        if (fileOpt.isEmpty()) {
+            return ResponseEntity.noContent().build();
         }
 
         File file = fileOpt.get();

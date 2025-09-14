@@ -40,4 +40,16 @@ public class FileStorageService {
             return Optional.empty(); // Fail safely
         }
     }
+    public Optional<File> getFile(String filename) {
+        try {
+            // Securely build the file path
+            Path filePath = Paths.get(filename).normalize();
+            File file = filePath.toFile();
+
+            return (file.exists() && file.isFile()) ? Optional.of(file) : Optional.empty();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return Optional.empty(); // Fail safely
+        }
+    }
 }
