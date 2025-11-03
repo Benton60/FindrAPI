@@ -14,7 +14,7 @@ and decided I wanted a project that stretched across a full tech stack. A social
 The project was never meant to become a fully fledged product, instead it was meant to provide a means to experiment with new technologies
 in a production-scale environment. Many of my previous projects, i.e. both chess engines and the notes app, only required one development suite.
 
-Chess Engines - Entirely backend development
+Chess Engines - Entirely backend development 
 Notes App - Entirely Front-end Android development
 
 I wanted a project that utilized everything at once, from the database to the UI. I settled one the Spring Framework as the backend due to my
