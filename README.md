@@ -18,7 +18,7 @@ Chess Engines - Entirely backend development
 
 Notes App - Entirely Front-end Android development
 
-I wanted a project that utilized everything at once, from the database to the UI. I settled one the Spring Framework as the backend due to my
+I wanted a project that utilized everything at once, from the database to the UI. I settled on the Spring Framework as the backend due to my
 previous experience with java and more specifically the JDBC. I chose an android client as the front end for the same reason. The project didn't begin
 as a way to learn new technologies but more to see how the technologies I already used work together to deliver a full-scale product.
 As the development process continued, however, I began to find new ideas and technologies that I wanted to implement, and Findr has continued to grow since then.
