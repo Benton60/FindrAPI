@@ -18,10 +18,10 @@ public class FollowRelationshipController {
     @Autowired
     private FollowRelationshipService followRelationshipService;
 
-    @PostMapping("/addFriend/{follower}/{followee}")
-    public ResponseEntity<FollowRelationship> addFriend(@PathVariable Long follower, @PathVariable Long followee){
+    @PostMapping("/addFriend/{followee}")
+    public ResponseEntity<FollowRelationship> addFriend(@PathVariable String username){
         try {
-            followRelationshipService.addRelationship(new FollowRelationship(follower, followee));
+            followRelationshipService.addFriend(username);
             return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -30,9 +30,9 @@ public class FollowRelationshipController {
         }
     }
     @DeleteMapping("/removeFriend/{relationShipID}")
-    public ResponseEntity<Boolean> removeFriend(@PathVariable Long relationShipID){
+    public ResponseEntity<Boolean> removeFriend(@PathVariable String username){
         try {
-            followRelationshipService.deleteRelationship(relationShipID);
+            followRelationshipService.deleteFriend(username);
             return ResponseEntity.ok().build();
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -55,6 +55,16 @@ public class FollowRelationshipController {
             return new ResponseEntity<>(followRelationshipService.getFollowers(username), HttpStatus.OK);
         }catch(IllegalStateException e){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+    @GetMapping("/checkFriendshipStatus/{username}")
+    public ResponseEntity<Boolean> checkFriendshipStatus(@PathVariable String username){
+        try {
+            return new ResponseEntity<>(followRelationshipService.checkFriendshipStatus(username), HttpStatus.OK);
+        }catch(IllegalStateException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -25,46 +25,34 @@ public class FollowRelationshipService {
     private UserRepository userRepository;
 
     // Add a follow relationship
-    public FollowRelationship addRelationship(FollowRelationship followRelationship) throws AuthenticationException {
+    public FollowRelationship addFriend(String username) throws AuthenticationException {
         User authenticatedUser = getAuthenticatedUser();
-
-        // Ensure the authenticated user is the follower
-        if (!authenticatedUser.getId().equals(followRelationship.getFollowerId())) {
-            throw new AuthenticationException("You are not authorized to create this follow relationship.");
-        }
+        User tobeFriended = userRepository.findByUsername(username).get();
 
         // Check if the relationship already exists
         boolean exists = followRelationshipRepository.existsByFollowerIdAndFolloweeId(
-                followRelationship.getFollowerId(),
-                followRelationship.getFolloweeId()
+                authenticatedUser.getId(),
+                tobeFriended.getId()
         );
 
         if (exists) {
             throw new IllegalStateException("Follow relationship already exists.");
         }
 
-        return followRelationshipRepository.save(followRelationship);
+        return followRelationshipRepository.save(new FollowRelationship(tobeFriended.getId(), authenticatedUser.getId()));
     }
-
     // Delete a follow relationship
-    public void deleteRelationship(Long relationshipId) throws AuthenticationException {
+    public void deleteFriend(String username) throws AuthenticationException {
         User authenticatedUser = getAuthenticatedUser();
+        User tobeUnFriended = userRepository.findByUsername(username).get();
 
-        Optional<FollowRelationship> relationshipOpt = followRelationshipRepository.findById(relationshipId);
-        if (relationshipOpt.isEmpty()) {
+        if (followRelationshipRepository.existsByFollowerIdAndFolloweeId(authenticatedUser.getId(), tobeUnFriended.getId())) {
             throw new IllegalArgumentException("Follow relationship not found.");
         }
 
-        FollowRelationship relationship = relationshipOpt.get();
-
-        // Ensure the authenticated user is the follower in this relationship
-        if (!authenticatedUser.getId().equals(relationship.getFollowerId())) {
-            throw new AuthenticationException("You are not authorized to delete this follow relationship.");
-        }
-
-        followRelationshipRepository.delete(relationship);
+        FollowRelationship followRelationship = followRelationshipRepository.findByFollowerIdAndFolloweeId(authenticatedUser.getId(), tobeUnFriended.getId());
+        followRelationshipRepository.deleteById(followRelationship.getId());
     }
-
     public List<User> getFriends(String username) {
         Long userID;
         try {
@@ -101,6 +89,12 @@ public class FollowRelationshipService {
         }
         return friendList;
     }
+    public Boolean checkFriendshipStatus(String username) throws AuthenticationException {
+        return followRelationshipRepository.existsByFollowerIdAndFolloweeId(getAuthenticatedUser().getId(), userRepository.findByUsername(username).get().getId());
+    }
+
+
+
     // Helper method to get the authenticated user
     private User getAuthenticatedUser() throws AuthenticationException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -119,6 +113,4 @@ public class FollowRelationshipService {
 
         return authenticatedUserOpt.get();
     }
-
-
 }
