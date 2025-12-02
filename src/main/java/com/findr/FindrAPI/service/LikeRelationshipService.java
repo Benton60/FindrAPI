@@ -4,6 +4,8 @@ import com.findr.FindrAPI.entity.FollowRelationship;
 import com.findr.FindrAPI.entity.LikeRelationship;
 import com.findr.FindrAPI.entity.Post;
 import com.findr.FindrAPI.entity.User;
+import com.findr.FindrAPI.exception.ObjectAlreadyExistsException;
+import com.findr.FindrAPI.exception.ObjectDoesNotExistException;
 import com.findr.FindrAPI.repository.LikeRelationshipRepository;
 import com.findr.FindrAPI.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +26,14 @@ public class LikeRelationshipService {
     @Autowired
     private PostService postService;
 
-    public Post addLike(long postID) throws AuthenticationException {
+    public Post addLike(long postID) throws AuthenticationException, ObjectAlreadyExistsException {
         //these two lines retrieve and modify the liked post
         Post tobeAdded = postService.findById(postID);
         tobeAdded.setLikes(tobeAdded.getLikes() + 1);
 
+        if(likeRelationshipRepository.existsByUserIDAndPostID(getAuthenticatedUser().getId(), postID)) {
+            throw new ObjectAlreadyExistsException();
+        }
 
         try {
             likeRelationshipRepository.save(new LikeRelationship(tobeAdded.getId(), getAuthenticatedUser().getId()));
@@ -41,10 +46,14 @@ public class LikeRelationshipService {
         }
     }
 
-    public Post removeLike(long postID) throws AuthenticationException {
+    public Post removeLike(long postID) throws AuthenticationException, ObjectDoesNotExistException {
         Post tobeRemoved = postService.findById(postID);
         tobeRemoved.setLikes(tobeRemoved.getLikes() - 1);
 
+
+        if(!likeRelationshipRepository.existsByUserIDAndPostID(getAuthenticatedUser().getId(), postID)) {
+            throw new ObjectDoesNotExistException();
+        }
         try{
             likeRelationshipRepository.delete(new LikeRelationship(tobeRemoved.getId(), getAuthenticatedUser().getId()));
             return postService.updatePost(tobeRemoved);

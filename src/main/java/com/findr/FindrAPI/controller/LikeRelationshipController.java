@@ -2,6 +2,8 @@ package com.findr.FindrAPI.controller;
 
 
 import com.findr.FindrAPI.entity.Post;
+import com.findr.FindrAPI.exception.ObjectAlreadyExistsException;
+import com.findr.FindrAPI.exception.ObjectDoesNotExistException;
 import com.findr.FindrAPI.service.LikeRelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,10 @@ public class LikeRelationshipController {
     public ResponseEntity<Post> addLike(@PathVariable long postID) {
         try{
             return new ResponseEntity<>(likeRelationshipService.addLike(postID), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } catch (ObjectAlreadyExistsException e) {
+            return new ResponseEntity<>(null, HttpStatus.ALREADY_REPORTED);
         }
     }
     @PostMapping("/removeLike/{postId}/")
@@ -32,6 +36,8 @@ public class LikeRelationshipController {
         try {
             return new ResponseEntity<>(likeRelationshipService.removeLike(postId), HttpStatus.OK);
         } catch (AuthenticationException e) {
+            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
+        } catch (ObjectDoesNotExistException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
