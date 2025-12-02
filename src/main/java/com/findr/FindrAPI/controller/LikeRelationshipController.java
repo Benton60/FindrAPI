@@ -29,7 +29,7 @@ public class LikeRelationshipController {
         }
     }
     @PostMapping("/removeLike/{postId}/")
-    public ResponseEntity<Post> removeLike(@PathVariable long postId, @PathVariable long userID) {
+    public ResponseEntity<Post> removeLike(@PathVariable long postId) {
         try {
             return new ResponseEntity<>(likeRelationshipService.removeLike(postId), HttpStatus.OK);
         } catch (AuthenticationException e) {
