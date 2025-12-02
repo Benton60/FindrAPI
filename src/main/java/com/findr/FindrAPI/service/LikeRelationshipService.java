@@ -62,6 +62,10 @@ public class LikeRelationshipService {
             throw e;
         }
     }
+
+    public boolean isLiked(long postID) throws AuthenticationException {
+        return likeRelationshipRepository.existsByUserIDAndPostID(getAuthenticatedUser().getId(), postID);
+    }
     // Helper method to get the authenticated user
     private User getAuthenticatedUser() throws AuthenticationException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
