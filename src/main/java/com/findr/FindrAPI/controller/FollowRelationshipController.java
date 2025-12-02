@@ -18,7 +18,7 @@ public class FollowRelationshipController {
     @Autowired
     private FollowRelationshipService followRelationshipService;
 
-    @PostMapping("/addFriend/{followee}")
+    @PostMapping("/addFriend/{username}")
     public ResponseEntity<FollowRelationship> addFriend(@PathVariable String username){
         try {
             followRelationshipService.addFriend(username);
@@ -29,7 +29,7 @@ public class FollowRelationshipController {
             return new ResponseEntity<>(HttpStatus.ALREADY_REPORTED);
         }
     }
-    @DeleteMapping("/removeFriend/{relationShipID}")
+    @DeleteMapping("/removeFriend/{username}")
     public ResponseEntity<Boolean> removeFriend(@PathVariable String username){
         try {
             followRelationshipService.deleteFriend(username);
