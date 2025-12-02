@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/friendships")
-public class followRelationshipController {
+public class FollowRelationshipController {
     @Autowired
     private FollowRelationshipService followRelationshipService;
 

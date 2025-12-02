@@ -30,8 +30,6 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private LikeRelationshipService likeRelationshipService;
 
     public Post createPost(Post post) {
         //this doesn't let the client decide what the likes are for obvious reasons
@@ -60,30 +58,6 @@ public class PostService {
             return postRepository.save(post);
         }else{
             throw new AuthenticationException();
-        }
-    }
-
-    public Post addLike(long postID, long userID) throws AuthenticationException {
-        Post toAddLike = findById(postID);
-        toAddLike.setLikes(toAddLike.getLikes() + 1);
-        LikeRelationship relationship = likeRelationshipService.addRelationship(new LikeRelationship(postID, userID));
-        try {
-            return updatePost(toAddLike);
-        }catch (Exception e) {
-            likeRelationshipService.deleteRelationship(relationship.getId());
-            throw e;
-        }
-    }
-
-    public Post removeLike(long postID, long userID) throws AuthenticationException {
-        Post toRemoveLike = findById(postID);
-        toRemoveLike.setLikes(toRemoveLike.getLikes() - 1);
-        likeRelationshipService.deleteRelationshipByPostIdAndUserId(postID, userID);
-        try{
-            return updatePost(toRemoveLike);
-        }catch (Exception e) {
-            likeRelationshipService.addRelationship(new LikeRelationship(postID, userID));
-            throw e;
         }
     }
 

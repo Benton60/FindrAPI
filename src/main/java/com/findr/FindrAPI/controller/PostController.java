@@ -99,20 +99,4 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @PostMapping("/addLike/{postID}/{userID}")
-    public ResponseEntity<Post> addLike(@PathVariable long postID, @PathVariable long userID) {
-        try{
-            return new ResponseEntity<>(postService.addLike(postID, userID), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
-    @PostMapping("removeLike/{postId}/{userID}")
-    public ResponseEntity<Post> removeLike(@PathVariable long postId, @PathVariable long userID) {
-        try {
-            return new ResponseEntity<>(postService.removeLike(postId, userID), HttpStatus.OK);
-        } catch (AuthenticationException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-    }
 }

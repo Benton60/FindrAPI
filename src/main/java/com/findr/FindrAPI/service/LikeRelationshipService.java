@@ -2,6 +2,7 @@ package com.findr.FindrAPI.service;
 
 import com.findr.FindrAPI.entity.FollowRelationship;
 import com.findr.FindrAPI.entity.LikeRelationship;
+import com.findr.FindrAPI.entity.Post;
 import com.findr.FindrAPI.entity.User;
 import com.findr.FindrAPI.repository.LikeRelationshipRepository;
 import com.findr.FindrAPI.repository.UserRepository;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.naming.AuthenticationException;
 import java.util.Optional;
@@ -19,63 +21,38 @@ public class LikeRelationshipService {
     private LikeRelationshipRepository likeRelationshipRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PostService postService;
 
-    public LikeRelationship addRelationship(LikeRelationship likeRelationship) throws AuthenticationException {
-        User authenticatedUser = getAuthenticatedUser();
-        // Ensure the authenticated user is the follower
-        if (!authenticatedUser.getId().equals(likeRelationship.getUserID())) {
-            throw new AuthenticationException("You are not authorized to create this follow relationship.");
+    public Post addLike(long postID) throws AuthenticationException {
+        //these two lines retrieve and modify the liked post
+        Post tobeAdded = postService.findById(postID);
+        tobeAdded.setLikes(tobeAdded.getLikes() + 1);
+
+
+        try {
+            likeRelationshipRepository.save(new LikeRelationship(tobeAdded.getId(), getAuthenticatedUser().getId()));
+            return postService.updatePost(tobeAdded);
+
+            //the catch clause goes back and deletes the saved relationship if the updatepost fails
+        }catch (Exception e) {
+            likeRelationshipRepository.delete(new LikeRelationship(tobeAdded.getId(), getAuthenticatedUser().getId()));
+            throw e;
         }
-
-        // Check if the relationship already exists
-        boolean exists = likeRelationshipRepository.existsByUserIDAndPostID(
-                likeRelationship.getUserID(),
-                likeRelationship.getPostID()
-        );
-
-        if (exists) {
-            throw new IllegalStateException("Follow relationship already exists.");
-        }
-
-        return likeRelationshipRepository.save(likeRelationship);
-
-    }
-    // Delete a follow relationship
-    public void deleteRelationship(Long relationshipId) throws AuthenticationException {
-        User authenticatedUser = getAuthenticatedUser();
-
-        Optional<LikeRelationship> relationshipOpt = likeRelationshipRepository.findById(relationshipId);
-        if (relationshipOpt.isEmpty()) {
-            throw new IllegalArgumentException("Follow relationship not found.");
-        }
-
-        LikeRelationship relationship = relationshipOpt.get();
-
-        // Ensure the authenticated user is the follower in this relationship
-        if (!authenticatedUser.getId().equals(relationship.getUserID())) {
-            throw new AuthenticationException("You are not authorized to delete this follow relationship.");
-        }
-
-        likeRelationshipRepository.delete(relationship);
-    }
-    public void deleteRelationshipByPostIdAndUserId(Long postID, Long userID) throws AuthenticationException {
-        User authenticatedUser = getAuthenticatedUser();
-
-        Optional<LikeRelationship> relationshipOpt = likeRelationshipRepository.findByUserIDAndPostID(userID, postID);
-        if (relationshipOpt.isEmpty()) {
-            throw new IllegalArgumentException("Follow relationship not found.");
-        }
-
-        LikeRelationship relationship = relationshipOpt.get();
-
-        // Ensure the authenticated user is the follower in this relationship
-        if (!authenticatedUser.getId().equals(relationship.getUserID())) {
-            throw new AuthenticationException("You are not authorized to delete this follow relationship.");
-        }
-
-        likeRelationshipRepository.delete(relationship);
     }
 
+    public Post removeLike(long postID) throws AuthenticationException {
+        Post tobeRemoved = postService.findById(postID);
+        tobeRemoved.setLikes(tobeRemoved.getLikes() - 1);
+
+        try{
+            likeRelationshipRepository.delete(new LikeRelationship(tobeRemoved.getId(), getAuthenticatedUser().getId()));
+            return postService.updatePost(tobeRemoved);
+        }catch (Exception e) {
+            likeRelationshipRepository.save(new LikeRelationship(tobeRemoved.getId(), getAuthenticatedUser().getId()));
+            throw e;
+        }
+    }
     // Helper method to get the authenticated user
     private User getAuthenticatedUser() throws AuthenticationException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
