@@ -37,7 +37,9 @@ public class PostService {
         //same with the author
         try {
             post.setAuthor(getAuthenticatedUser().getUsername());
-        } catch (AuthenticationException e) {throw new IllegalStateException(e);}
+        } catch (AuthenticationException e) {
+            throw new IllegalStateException(e);
+        }
 
         //
         post.setPhotoPath(String.valueOf(Math.random() * Math.random()));
@@ -54,9 +56,9 @@ public class PostService {
     public Post updatePost(Post post) throws AuthenticationException {
         User authenticatedUser = getAuthenticatedUser();
         System.out.println(authenticatedUser);
-        if(Objects.equals(authenticatedUser.getUsername(), post.getAuthor())) {
+        if (Objects.equals(authenticatedUser.getUsername(), post.getAuthor())) {
             return postRepository.save(post);
-        }else{
+        } else {
             throw new AuthenticationException();
         }
     }
@@ -102,6 +104,11 @@ public class PostService {
         }
 
         return authenticatedUserOpt.get();
+    }
+
+    //this function is needed becuase normally you cant update a post unless you own it but in the case of likes you can
+    public Post updatePostLikes(Post post) {
+        return postRepository.save(post);
     }
 }
 

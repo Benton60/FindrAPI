@@ -28,7 +28,7 @@ public class LikeRelationshipController {
             return new ResponseEntity<>(null, HttpStatus.ALREADY_REPORTED);
         }
     }
-    @PostMapping("/removeLike/{postId}/")
+    @PostMapping("/removeLike/{postId}")
     public ResponseEntity<Post> removeLike(@PathVariable long postId) {
         try {
             return new ResponseEntity<>(likeRelationshipService.removeLike(postId), HttpStatus.OK);

@@ -8,6 +8,7 @@ import com.findr.FindrAPI.exception.ObjectAlreadyExistsException;
 import com.findr.FindrAPI.exception.ObjectDoesNotExistException;
 import com.findr.FindrAPI.repository.LikeRelationshipRepository;
 import com.findr.FindrAPI.repository.UserRepository;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,9 @@ public class LikeRelationshipService {
     private PostService postService;
 
     public Post addLike(long postID) throws AuthenticationException, ObjectAlreadyExistsException {
+        User authUser = getAuthenticatedUser();
+
+
         //these two lines retrieve and modify the liked post
         Post tobeAdded = postService.findById(postID);
         tobeAdded.setLikes(tobeAdded.getLikes() + 1);
@@ -35,32 +39,25 @@ public class LikeRelationshipService {
             throw new ObjectAlreadyExistsException();
         }
 
-        try {
-            likeRelationshipRepository.save(new LikeRelationship(tobeAdded.getId(), getAuthenticatedUser().getId()));
-            return postService.updatePost(tobeAdded);
-
-            //the catch clause goes back and deletes the saved relationship if the updatepost fails
-        }catch (Exception e) {
-            likeRelationshipRepository.delete(new LikeRelationship(tobeAdded.getId(), getAuthenticatedUser().getId()));
-            throw e;
-        }
+        likeRelationshipRepository.save(new LikeRelationship(tobeAdded.getId(), authUser.getId()));
+        return postService.updatePostLikes(tobeAdded);
     }
 
     public Post removeLike(long postID) throws AuthenticationException, ObjectDoesNotExistException {
+        User authUser = getAuthenticatedUser();
+
+
         Post tobeRemoved = postService.findById(postID);
         tobeRemoved.setLikes(tobeRemoved.getLikes() - 1);
 
 
-        if(!likeRelationshipRepository.existsByUserIDAndPostID(getAuthenticatedUser().getId(), postID)) {
-            throw new ObjectDoesNotExistException();
-        }
-        try{
-            likeRelationshipRepository.delete(new LikeRelationship(tobeRemoved.getId(), getAuthenticatedUser().getId()));
-            return postService.updatePost(tobeRemoved);
-        }catch (Exception e) {
-            likeRelationshipRepository.save(new LikeRelationship(tobeRemoved.getId(), getAuthenticatedUser().getId()));
-            throw e;
-        }
+        LikeRelationship like = likeRelationshipRepository
+                .findByUserIDAndPostID(authUser.getId(), tobeRemoved.getId())
+                .orElseThrow(ObjectDoesNotExistException::new);
+
+        likeRelationshipRepository.delete(like);
+        return postService.updatePostLikes(tobeRemoved);
+
     }
 
     public boolean isLiked(long postID) throws AuthenticationException {
