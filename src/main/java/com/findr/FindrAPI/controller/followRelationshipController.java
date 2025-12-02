@@ -49,4 +49,12 @@ public class followRelationshipController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/followers/{username}")
+    public ResponseEntity<List<User>> getFollowers(@PathVariable String username){
+        try {
+            return new ResponseEntity<>(followRelationshipService.getFollowers(username), HttpStatus.OK);
+        }catch(IllegalStateException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
