@@ -39,14 +39,14 @@ public class FollowRelationshipService {
             throw new IllegalStateException("Follow relationship already exists.");
         }
 
-        return followRelationshipRepository.save(new FollowRelationship(tobeFriended.getId(), authenticatedUser.getId()));
+        return followRelationshipRepository.save(new FollowRelationship(authenticatedUser.getId(), tobeFriended.getId()));
     }
     // Delete a follow relationship
     public void deleteFriend(String username) throws AuthenticationException {
         User authenticatedUser = getAuthenticatedUser();
         User tobeUnFriended = userRepository.findByUsername(username).get();
 
-        if (followRelationshipRepository.existsByFollowerIdAndFolloweeId(authenticatedUser.getId(), tobeUnFriended.getId())) {
+        if (!followRelationshipRepository.existsByFollowerIdAndFolloweeId(authenticatedUser.getId(), tobeUnFriended.getId())) {
             throw new IllegalArgumentException("Follow relationship not found.");
         }
 
