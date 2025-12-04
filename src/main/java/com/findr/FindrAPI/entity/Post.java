@@ -15,11 +15,11 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String description;
-
     @Column
     private String author;
+
+    @Column(nullable = false)
+    private String description;
 
     @Column (nullable = false, unique = true)
     private String photoPath;
@@ -32,7 +32,7 @@ public class Post {
     @Column (nullable = false)
     private long likes;
 
-    public Post(Long id, String description, String author, String photoPath, Point location, long likes) {
+    public Post(Long id, String author, String description, String photoPath, Point location, long likes) {
         this.id = id;
         this.description = description;
         this.author = author;
