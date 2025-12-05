@@ -99,4 +99,13 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    @GetMapping("/byPage/{id}/{longitude}/{latitude")
+    public ResponseEntity<List<Post>> getPostByPage(@PathVariable int pageNum, @PathVariable Double longitude, @PathVariable Double latitude) {
+        List<Post> postList = postService.findByPage(pageNum,new LocationService().createPoint(longitude, latitude));
+        if (postList != null) {
+            return new ResponseEntity<>(postList, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }

@@ -19,6 +19,16 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         """, nativeQuery = true)
     List<Object[]> findNearestPosts(@Param("point") String point);
 
+
+    @Query(value = """
+        SELECT id, author, description, photo_path, ST_AsText(location) AS location, likes, 
+               ST_Distance_Sphere(location, ST_GeomFromText(:point)) AS distance
+        FROM post
+        ORDER BY distance
+        LIMIT :limit
+        """, nativeQuery = true)
+    List<Object[]> findNearestPostsByPage(@Param("limit") int limit, @Param("point") String point);
+
     Optional<Post> findById(Long id);
     List<Post> findByAuthor(String author);
 }
