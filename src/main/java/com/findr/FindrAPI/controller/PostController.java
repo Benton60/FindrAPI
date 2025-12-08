@@ -83,13 +83,10 @@ public class PostController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    @GetMapping("/byAuthor/{author}")
-    public ResponseEntity<List<Post>> getPostByAuthor(@PathVariable String author) {
-        List<Post> postList = postService.findByAuthor(author);
-        if (postList != null) {
-            return new ResponseEntity<>(postList, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    @GetMapping("/byAuthor/{page}/{author}")
+    public ResponseEntity<List<Post>> getPostByAuthor(@PathVariable int page, @PathVariable String author) {
+        List<Post> postList = postService.findByAuthor(page, author);
+        return new ResponseEntity<>(postList, HttpStatus.OK); // empty list if no posts
     }
     @GetMapping("/byLocation/{longitude}/{latitude}")
     public ResponseEntity<List<Post>> getPostByLocation(@PathVariable Double longitude, @PathVariable Double latitude) {

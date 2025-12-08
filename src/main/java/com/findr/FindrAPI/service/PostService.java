@@ -69,9 +69,23 @@ public class PostService {
         return postOptional.orElse(null);
     }
 
-    public List<Post> findByAuthor(String author) {
-        List<Post> postList = postRepository.findByAuthor(author);
-        return postList;
+    public List<Post> findByAuthor(int pageNum, String author) {
+        if (pageNum < 0) pageNum = 0;  // prevent negative pages
+
+        int offset = pageNum * 20;       // zero-based paging
+
+        List<Object[]> results = postRepository.findByAuthor(offset, author);
+
+        return results.stream()
+                .map(r -> new Post(
+                        ((Number) r[0]).longValue(),
+                        ((String) r[1]).trim(),
+                        ((String) r[2]).trim(),
+                        ((String) r[3]).trim(),
+                        Post.convertToPoint((String) r[4]),
+                        ((Number) r[5]).longValue()
+                ))
+                .collect(Collectors.toList()); // empty list if no results
     }
 
     public List<Post> findByLocation(Point location) {

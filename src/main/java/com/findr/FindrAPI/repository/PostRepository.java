@@ -32,5 +32,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
     Optional<Post> findById(Long id);
-    List<Post> findByAuthor(String author);
+    @Query(value = """
+        SELECT id, author, description, photo_path, ST_AsText(location) AS location, likes
+        FROM post
+        WHERE author = :author
+        ORDER BY id DESC
+        LIMIT 20 OFFSET :offset
+        """, nativeQuery = true)
+    List<Object[]> findByAuthor(@Param("offset") int offset, @Param("author") String author);
+
 }
