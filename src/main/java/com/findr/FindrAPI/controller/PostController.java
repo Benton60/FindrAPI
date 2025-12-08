@@ -4,6 +4,7 @@ package com.findr.FindrAPI.controller;
 import com.findr.FindrAPI.entity.Post;
 import com.findr.FindrAPI.service.LocationService;
 import com.findr.FindrAPI.service.PostService;
+import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -92,20 +93,17 @@ public class PostController {
     }
     @GetMapping("/byLocation/{longitude}/{latitude}")
     public ResponseEntity<List<Post>> getPostByLocation(@PathVariable Double longitude, @PathVariable Double latitude) {
-        List<Post> postList = postService.findByLocation(new LocationService().createPoint(longitude, latitude));
+        List<Post> postList = postService.findByLocation(LocationService.createPoint(longitude, latitude));
         if (postList != null) {
             return new ResponseEntity<>(postList, HttpStatus.OK);
         }else{
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-    @GetMapping("/byPage/{id}/{longitude}/{latitude")
-    public ResponseEntity<List<Post>> getPostByPage(@PathVariable int pageNum, @PathVariable Double longitude, @PathVariable Double latitude) {
-        List<Post> postList = postService.findByPage(pageNum,new LocationService().createPoint(longitude, latitude));
-        if (postList != null) {
-            return new ResponseEntity<>(postList, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping("/byPage/{page}/{longitude}/{latitude}")
+    public ResponseEntity<List<Post>> getPostByPage(@PathVariable int page, @PathVariable Double longitude, @PathVariable Double latitude) {
+        List<Post> postList = postService.findByPage(page, new LocationService().createPoint(longitude, latitude));
+        return new ResponseEntity<>(postList, HttpStatus.OK); // empty list if no posts
     }
+
 }

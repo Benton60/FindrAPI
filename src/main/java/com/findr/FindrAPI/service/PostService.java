@@ -8,6 +8,7 @@ import com.findr.FindrAPI.repository.LikeRelationshipRepository;
 import com.findr.FindrAPI.repository.PostRepository;
 import com.findr.FindrAPI.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -111,26 +112,28 @@ public class PostService {
         return postRepository.save(post);
     }
 
+
     public List<Post> findByPage(int pageNum, Point location) {
+        if (pageNum < 0) pageNum = 0;  // prevent negative pages
+
         String point = Post.convertPointToString(location);
-        List<Post> posts = postRepository.findNearestPostsByPage(pageNum * 20, point)
-                .stream()
-                .map(result -> {
-                    Long id = ((Number) result[0]).longValue();
-                    String author = ((String) result[1]).trim();
-                    String description = ((String) result[2]).trim();
-                    String photoPath = ((String) result[3]).trim();
-                    Point locat = Post.convertToPoint((String) result[4]);
-                    Long likes = ((Number) result[5]).longValue();
-                    return new Post(id, author, description, photoPath, locat, likes);
-                }).collect(Collectors.toList());
-        try {
-            return posts.subList(20 * pageNum - 1, posts.size());
-        } catch (Exception e) {
-            //this catches out of bounds errors which means we reached the end of the database
-            return null;
-        }
+        int offset = pageNum * 20;       // zero-based paging
+
+        List<Object[]> results = postRepository.findNearestPostsByPage(offset, point);
+
+        return results.stream()
+                .map(r -> new Post(
+                        ((Number) r[0]).longValue(),
+                        ((String) r[1]).trim(),
+                        ((String) r[2]).trim(),
+                        ((String) r[3]).trim(),
+                        Post.convertToPoint((String) r[4]),
+                        ((Number) r[5]).longValue()
+                ))
+                .collect(Collectors.toList()); // empty list if no results
     }
+
+
 }
 
 
