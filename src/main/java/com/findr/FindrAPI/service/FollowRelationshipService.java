@@ -29,13 +29,15 @@ public class FollowRelationshipService {
         User authenticatedUser = getAuthenticatedUser();
         User tobeFriended = userRepository.findByUsername(username).get();
 
-        // Check if the relationship already exists
-        boolean exists = followRelationshipRepository.existsByFollowerIdAndFolloweeId(
-                authenticatedUser.getId(),
-                tobeFriended.getId()
-        );
+        if(authenticatedUser.getUsername().equals(tobeFriended.getUsername())){
+            throw new IllegalStateException("Cannot Friend Yourself");
+        }
 
-        if (exists) {
+
+        // Check if the relationship already exists
+        boolean exists = followRelationshipRepository.existsByFollowerIdAndFolloweeId(authenticatedUser.getId(), tobeFriended.getId());
+
+        if(exists){
             throw new IllegalStateException("Follow relationship already exists.");
         }
 
