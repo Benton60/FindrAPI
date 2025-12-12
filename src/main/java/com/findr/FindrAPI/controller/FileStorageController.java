@@ -4,6 +4,7 @@ package com.findr.FindrAPI.controller;
 
 
 import com.findr.FindrAPI.service.FileStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/files")
 public class FileStorageController {
-    private final FileStorageService fileStorageService;
+
+    @Autowired
+    private FileStorageService fileStorageService;
 
     public FileStorageController(FileStorageService fileStorageService) {
         this.fileStorageService = fileStorageService;
@@ -34,20 +37,19 @@ public class FileStorageController {
 //    }
 
     //Upload a Profile Photo
-    @PostMapping("/upload/profile/{username}")
-    public ResponseEntity<String> uploadProfile(@PathVariable String username, @RequestPart("file") MultipartFile file) {
+    @PostMapping(value = "/upload/profile/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadProfile(@PathVariable String username, @RequestPart("image") MultipartFile file) {
         try{
-            return ResponseEntity.ok(fileStorageService.saveProfilePic(username, file));
+            return new ResponseEntity<>(fileStorageService.saveProfilePic(username, file), HttpStatus.OK);
         } catch (AuthenticationException e) {
             return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
     // Download a file
-    @GetMapping("/download/profile/{user}/{filename}")
-    public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user, @PathVariable String filename) {
-        System.out.println(user + "/" + filename);
-        Optional<File> fileOpt = fileStorageService.getFile(user, filename);
-
+    @GetMapping("/download/profile/{user}")
+    public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user) {
+        System.out.println(user + "/" + "profile");
+        Optional<File> fileOpt = fileStorageService.getProfileFile(user);
         try {
             return loadFileFromStorage(fileOpt);
         } catch (Exception e) {
