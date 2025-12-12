@@ -9,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.naming.AuthenticationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,13 +24,24 @@ public class FileStorageController {
         this.fileStorageService = fileStorageService;
     }
 
-    // Upload a file
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        String filePath = fileStorageService.saveFile(file);
-        return ResponseEntity.ok("File uploaded: " + filePath);
-    }
 
+    //this was an endpoint, but I low-key don't think it'll be used.
+//    // Upload a file
+//    @PostMapping("/upload/post")
+//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+//        String filePath = fileStorageService.saveFile(file);
+//        return ResponseEntity.ok("File uploaded: " + filePath);
+//    }
+
+    //Upload a Profile Photo
+    @PostMapping("/upload/profile/{username}")
+    public ResponseEntity<String> uploadProfile(@PathVariable String username, @RequestPart("file") MultipartFile file) {
+        try{
+            return ResponseEntity.ok(fileStorageService.saveProfilePic(username, file));
+        } catch (AuthenticationException e) {
+            return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
     // Download a file
     @GetMapping("/download/profile/{user}/{filename}")
     public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user, @PathVariable String filename) {

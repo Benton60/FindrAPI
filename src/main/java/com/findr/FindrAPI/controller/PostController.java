@@ -37,10 +37,11 @@ public class PostController {
             post.setAuthor(author);
             post.setDescription(description);
             post.setLocation(LocationService.createPoint(longitude, latitude));
-            // 1. Save the Post first to get its ID (assuming your service does this)
+
+            //save the post to get the id
             Post createdPost = postService.createPost(post);
 
-            // 2. Build the upload directory path: uploads/{username}/{postId}
+            // Build the upload directory path: uploads/{username}/{postId}
             String username = createdPost.getAuthor();
             Long postId = createdPost.getId();
 
@@ -52,7 +53,7 @@ public class PostController {
                 throw new IOException("Could not create upload directory");
             }
 
-            // 3. Save the file with its original filename (or generate one)
+            //Save the file with its original filename (or generate one)
             String originalFilename = imageFile.getOriginalFilename();
             if (originalFilename == null) {
                 originalFilename = "image.jpg"; // fallback filename
@@ -61,11 +62,12 @@ public class PostController {
             File savedFile = new File(uploadDir, originalFilename);
             imageFile.transferTo(savedFile);
             System.out.println(savedFile.getAbsolutePath());
-            // 4. Update the Post with the image path or URL (assuming you have a field for it)
+
+            //Update the Post with the image path or URL
             createdPost.setPhotoPath(uploadDirPath + File.separator + originalFilename);
             postService.updatePost(createdPost); // Save changes to the post
 
-            // 5. Return the created post
+            //Return the created post
             return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
 
         } catch (IOException e) {
