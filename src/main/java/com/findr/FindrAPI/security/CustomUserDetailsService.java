@@ -16,6 +16,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+
+
+    //this function defines how a users credentials should be pulled from the database for the authentication check
+    //because the fields don't necessarily match up perfectly
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         // Log the login attempt
