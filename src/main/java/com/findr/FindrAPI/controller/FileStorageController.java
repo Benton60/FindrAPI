@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Optional;
 
@@ -34,17 +35,9 @@ public class FileStorageController {
     public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user, @PathVariable String filename) {
         System.out.println(user + "/" + filename);
         Optional<File> fileOpt = fileStorageService.getFile(user, filename);
-        if (fileOpt.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
 
-        File file = fileOpt.get();
         try {
-            Resource resource = new UrlResource(file.toURI());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Files.probeContentType(file.toPath())))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                    .body(resource);
+            return loadFileFromStorage(fileOpt);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
@@ -56,19 +49,23 @@ public class FileStorageController {
         filePath = filePath.replace(" ", "\\");
         System.out.println(filePath);
         Optional<File> fileOpt = fileStorageService.getFile(filePath);
+
+        try{
+            return loadFileFromStorage(fileOpt);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    private ResponseEntity<Resource> loadFileFromStorage(Optional<File> fileOpt) throws IOException {
         if (fileOpt.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
 
         File file = fileOpt.get();
-        try {
             Resource resource = new UrlResource(file.toURI());
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(Files.probeContentType(file.toPath())))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
                     .body(resource);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
     }
 }
