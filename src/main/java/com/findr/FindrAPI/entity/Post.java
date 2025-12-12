@@ -96,7 +96,7 @@ public class Post {
         }
         String[] split = point.replace("POINT(","").replace(")","").split(" ");
         //parse the point long and lat and return a point object
-        return new LocationService().createPoint((Double.parseDouble(split[0])),(Double.parseDouble(split[1])));
+        return LocationService.createPoint((Double.parseDouble(split[0])),(Double.parseDouble(split[1])));
     }
 
     public static String convertPointToString(Point location) {

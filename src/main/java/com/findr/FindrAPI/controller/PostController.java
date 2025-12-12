@@ -4,14 +4,12 @@ package com.findr.FindrAPI.controller;
 import com.findr.FindrAPI.entity.Post;
 import com.findr.FindrAPI.service.LocationService;
 import com.findr.FindrAPI.service.PostService;
-import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import javax.naming.AuthenticationException;
 import java.awt.*;
 import java.io.File;
@@ -42,14 +40,16 @@ public class PostController {
             // 1. Save the Post first to get its ID (assuming your service does this)
             Post createdPost = postService.createPost(post);
 
-            // 2. Build the upload directory path: uploads/{username}/{postid}
+            // 2. Build the upload directory path: uploads/{username}/{postId}
             String username = createdPost.getAuthor();
             Long postId = createdPost.getId();
 
             String uploadDirPath = "C:\\Users\\bento\\IdeaProjects\\FindrAPI\\uploads" + File.separator + username + File.separator + postId;
             File uploadDir = new File(uploadDirPath);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();  // Create directories if not exist
+
+            //if the file doesn't exist and also cant be created then throw an error
+            if (!uploadDir.exists() && !uploadDir.mkdirs()) {
+                throw new IOException("Could not create upload directory");
             }
 
             // 3. Save the file with its original filename (or generate one)
@@ -69,7 +69,6 @@ public class PostController {
             return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
 
         } catch (IOException e) {
-            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (AuthenticationException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
@@ -99,7 +98,7 @@ public class PostController {
     }
     @GetMapping("/byPage/{page}/{longitude}/{latitude}")
     public ResponseEntity<List<Post>> getPostByPage(@PathVariable int page, @PathVariable Double longitude, @PathVariable Double latitude) {
-        List<Post> postList = postService.findByPage(page, new LocationService().createPoint(longitude, latitude));
+        List<Post> postList = postService.findByPage(page, LocationService.createPoint(longitude, latitude));
         return new ResponseEntity<>(postList, HttpStatus.OK); // empty list if no posts
     }
 

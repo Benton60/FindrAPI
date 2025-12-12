@@ -1,7 +1,6 @@
 package com.findr.FindrAPI.entity;
 
 import jakarta.persistence.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 
 
 @Entity

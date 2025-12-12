@@ -10,11 +10,6 @@ import org.locationtech.jts.geom.Point;
 
 @Entity
 public class User {
-    public User(String username, String password, Point location) {
-        this.username = username;
-        this.password = password;
-        this.location = location;
-    }
     public User() {}
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

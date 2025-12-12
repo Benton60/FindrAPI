@@ -54,7 +54,9 @@ public class UserController {
             if (user != null) {
                 return new ResponseEntity<>(user, HttpStatus.OK);
             }
-        } catch (AuthenticationException e) {}
+        } catch (AuthenticationException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     @GetMapping("/byID/{id}")
