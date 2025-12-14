@@ -28,14 +28,6 @@ public class FileStorageController {
     }
 
 
-    //this was an endpoint, but I low-key don't think it'll be used.
-//    // Upload a file
-//    @PostMapping("/upload/post")
-//    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-//        String filePath = fileStorageService.saveFile(file);
-//        return ResponseEntity.ok("File uploaded: " + filePath);
-//    }
-
     //Upload a Profile Photo
     @PostMapping(value = "/upload/profile/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadProfile(@PathVariable String username, @RequestPart("image") MultipartFile file) {

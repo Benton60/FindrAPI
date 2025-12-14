@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.naming.AuthenticationException;
 import java.io.*;
 import java.nio.file.*;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -79,9 +78,7 @@ public class FileStorageService {
             }
 
             // Look for a file named "profile" with ANY extension
-            File[] matches = directory.listFiles((dir, name) -> {
-                return name.startsWith("profile.");
-            });
+            File[] matches = directory.listFiles((dir, name) -> name.startsWith("profile."));
 
             if (matches != null && matches.length > 0) {
                 return Optional.of(matches[0]); // return first match
@@ -99,7 +96,11 @@ public class FileStorageService {
             Path filePath = Paths.get(filename).normalize();
             File file = filePath.toFile();
 
-            return (file.exists() && file.isFile()) ? Optional.of(file) : Optional.empty();
+            if(file.exists() && file.isFile()){
+                return Optional.of(file);
+            }else{
+                return Optional.empty();
+                }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Optional.empty(); // Fail safely
