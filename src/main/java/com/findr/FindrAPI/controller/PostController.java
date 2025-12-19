@@ -65,7 +65,7 @@ public class PostController {
 
             //Update the Post with the image path or URL
             createdPost.setPhotoPath(uploadDirPath + File.separator + originalFilename);
-            postService.updatePost(createdPost); // Save changes to the post
+            createdPost = postService.updatePost(createdPost); // Save changes to the post
 
             //Return the created post
             return new ResponseEntity<>(createdPost, HttpStatus.CREATED);

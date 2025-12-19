@@ -49,12 +49,6 @@ public class UserService {
         return userOptional.orElse(null); // Return null if user not found
     }
 
-    //this retrieves the entire user file including password. It is NOT NOT NOT to be used publicly or else it will leak password hashes. It is only used because we need to get the full user profile to update it sometimes
-    private User findByUsernameWithAuth(String username) throws AuthenticationException {
-        Optional<User> userOptional = userRepository.findByUsername(username);
-        return userOptional.orElse(null); // Return null if user not found
-    }
-
     public String encodePassword(String password) {
         return passwordEncoder.encode(password);
     }
