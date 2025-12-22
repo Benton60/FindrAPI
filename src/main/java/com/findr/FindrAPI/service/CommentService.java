@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.naming.AuthenticationException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -29,12 +28,7 @@ public class CommentService {
     }
 
     public List<Comment> getCommentsByPostID(Long postID) {
-        return commentRepository.findByPostID(postID).stream().map(r -> new Comment(
-                ((Number) r[0]).longValue(),
-                ((String) r[1]).trim(),
-                ((String) r[2]).trim(),
-                ((Number) r[3]).longValue()
-        )).collect(Collectors.toList());
+        return commentRepository.findByPostID(postID);
     }
 
 
