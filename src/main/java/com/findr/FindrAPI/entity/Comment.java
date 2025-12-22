@@ -19,16 +19,13 @@ public class Comment {
     @Column(nullable = false)
     private Long postID;
 
-    @Column
-    private String postDate;
 
     public Comment(){}
-    public Comment(Long id,  String comment, String author, Long postID, String postDate) {
+    public Comment(Long id,  String comment, String author, Long postID) {
         this.id = id;
         this.comment = comment;
         this.author = author;
         this.postID = postID;
-        this.postDate = postDate;
     }
 
     private Long getId() {
@@ -54,11 +51,5 @@ public class Comment {
     }
     public void setPostID(Long postID) {
         this.postID = postID;
-    }
-    public String getPostDate() {
-        return postDate;
-    }
-    public void setPostDate(String postDate) {
-        this.postDate = postDate;
     }
 }
