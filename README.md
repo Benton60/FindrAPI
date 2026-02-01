@@ -30,7 +30,7 @@ The database calls are all controlled by the JDBC driver. The rest of the codeba
 
 ### Points of Interest
 1) The API uses spring's built-in security service
-2) So far the database has tables for users, posts, and follow-relationships
+2) So far the database has tables for users, posts, follow-relationships, like-relationships, and comments
 3) The file handling and storage system was one of the best parts of the backend and works externally from the database
 4) There is custom point serialization built-in to help reduce the complexity when storing locations in a database as they are stored in pure binary but are handled as JSON objects by the API
 
