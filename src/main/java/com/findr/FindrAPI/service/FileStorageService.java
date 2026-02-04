@@ -90,12 +90,13 @@ public class FileStorageService {
         }
     }
 
-    public Optional<File> getFile(String filename) {
+    public Optional<File> getFile(String author, Long postID, String filename) {
         try {
             // Securely build the file path
-            Path filePath = Paths.get(filename).normalize();
-            File file = filePath.toFile();
+            Path filePath = Paths.get(STORAGE_DIR, author, postID.toString(), filename).normalize();
+            System.out.println("---------------------------------------------\n" + filePath + "\n");
 
+            File file = filePath.toFile();
             if(file.exists() && file.isFile()){
                 return Optional.of(file);
             }else{

@@ -69,13 +69,13 @@ public class PostController {
 
 
             //Update the Post with the image path or URL
-            createdPost.setPhotoPath(uploadDir.getAbsolutePath() + File.separator + originalFilename);
+            createdPost.setPhotoPath(originalFilename);
             createdPost = postService.updatePost(createdPost); // Save changes to the post
 
 
 
-            //try to open the file to check it exists TODO -- see todo above
-            fileStorageService.getFile("/home/bentonh/IdeaProjects/FindrAPI/uploads" + File.separator + username + File.separator + postId);
+            //this really shouldn't do this its bad practice but it's the easiest way to use the
+            fileStorageService.getFile(post.getAuthor(), postId, post.getPhotoPath());
 
 
             //Return the created post

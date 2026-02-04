@@ -49,12 +49,10 @@ public class FileStorageController {
         }
     }
 
-    @GetMapping("/download/post/{filePath}")
-    public ResponseEntity<Resource> downloadPost(@PathVariable String filePath) {
-        System.out.println(filePath);
-        filePath = filePath.replace(" ", "\\");
-        System.out.println(filePath);
-        Optional<File> fileOpt = fileStorageService.getFile(filePath);
+    @GetMapping("/download/post/{author}/{postID}/{fileName}")
+    public ResponseEntity<Resource> downloadPost(@PathVariable String author, @PathVariable Long postID, @PathVariable String fileName) {
+        System.out.println(fileName);
+        Optional<File> fileOpt = fileStorageService.getFile(author , postID, fileName);
 
         try{
             return loadFileFromStorage(fileOpt);
