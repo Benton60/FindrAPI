@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "follow_relationship")
 public class FollowRelationship {
     @Column
     private Long followerId;

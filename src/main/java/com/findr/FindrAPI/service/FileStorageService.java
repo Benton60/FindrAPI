@@ -17,7 +17,7 @@ public class FileStorageService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final String STORAGE_DIR = "uploads";
+    public static final String STORAGE_DIR = "uploads";
 
     public FileStorageService() {
         try {
@@ -39,14 +39,14 @@ public class FileStorageService {
             Path userDir = Paths.get(STORAGE_DIR, username).normalize();
             Files.createDirectories(userDir); // Create directory if it does not exist
 
-            // 1. Delete any existing profile.* file
+            // Delete any existing profile.* file
             try (DirectoryStream<Path> stream = Files.newDirectoryStream(userDir, "profile.*")) {
                 for (Path oldFile : stream) {
                     Files.deleteIfExists(oldFile);
                 }
             }
 
-            // 2. Extract extension safely
+            // Extract extension safely
             String originalName = file.getOriginalFilename();
             if (originalName == null || !originalName.contains(".")) {
                 throw new RuntimeException("File must have an extension");
@@ -54,10 +54,10 @@ public class FileStorageService {
 
             String extension = originalName.substring(originalName.lastIndexOf('.') + 1);
 
-            // 3. Create new path: profile.<ext>
+            // Create new path: profile.<ext>
             Path newFilePath = userDir.resolve("profile." + extension);
 
-            // 4. Save file (replaceExisting for extra safety)
+            // Save file (replaceExisting for extra safety)
             Files.copy(file.getInputStream(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
 
             return newFilePath.toString();

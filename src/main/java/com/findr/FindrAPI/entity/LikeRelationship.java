@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 
 @Entity
+@Table(name = "like_relationship")
 public class LikeRelationship {
     @Column
     private long postID;

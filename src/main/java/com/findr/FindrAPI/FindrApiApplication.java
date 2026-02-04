@@ -1,7 +1,6 @@
 package com.findr.FindrAPI;
 
-import com.findr.FindrAPI.entity.User;
-import com.findr.FindrAPI.service.UserService;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

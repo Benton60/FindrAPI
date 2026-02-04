@@ -2,6 +2,7 @@ package com.findr.FindrAPI.controller;
 
 
 import com.findr.FindrAPI.entity.Post;
+import com.findr.FindrAPI.service.FileStorageService;
 import com.findr.FindrAPI.service.LocationService;
 import com.findr.FindrAPI.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,19 @@ import javax.naming.AuthenticationException;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static com.findr.FindrAPI.service.FileStorageService.STORAGE_DIR;
 
 @RestController
 @RequestMapping("/api/posts")
 public class PostController {
     @Autowired
     private PostService postService;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @PostMapping(value = "/createPostWithImage", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Post> createPostWithImage(
@@ -45,10 +52,8 @@ public class PostController {
             String username = createdPost.getAuthor();
             Long postId = createdPost.getId();
 
-            String uploadDirPath = "C:\\Users\\bento\\IdeaProjects\\FindrAPI\\uploads" + File.separator + username + File.separator + postId;
-            File uploadDir = new File(uploadDirPath);
+            File uploadDir = Paths.get(STORAGE_DIR, username, postId.toString()).normalize().toFile();
 
-            //if the file doesn't exist and also cant be created then throw an error
             if (!uploadDir.exists() && !uploadDir.mkdirs()) {
                 throw new IOException("Could not create upload directory");
             }
@@ -59,13 +64,19 @@ public class PostController {
                 originalFilename = "image.jpg"; // fallback filename
             }
 
-            File savedFile = new File(uploadDir, originalFilename);
-            imageFile.transferTo(savedFile);
-            System.out.println(savedFile.getAbsolutePath());
+            File destinationFile = new File(uploadDir.getAbsolutePath() + File.separator + originalFilename);
+            imageFile.transferTo(destinationFile);
+
 
             //Update the Post with the image path or URL
-            createdPost.setPhotoPath(uploadDirPath + File.separator + originalFilename);
+            createdPost.setPhotoPath(uploadDir.getAbsolutePath() + File.separator + originalFilename);
             createdPost = postService.updatePost(createdPost); // Save changes to the post
+
+
+
+            //try to open the file to check it exists TODO -- see todo above
+            fileStorageService.getFile("/home/bentonh/IdeaProjects/FindrAPI/uploads" + File.separator + username + File.separator + postId);
+
 
             //Return the created post
             return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
@@ -76,6 +87,13 @@ public class PostController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
+
+
+
+
+
+
+
     @GetMapping("/byID/{id}")
     public ResponseEntity<Post> getPostByID(@PathVariable int id) {
         Post post = postService.findById(id);
