@@ -30,14 +30,14 @@ public class FileStorageController {
 
     //Upload a Profile Photo
     @PostMapping(value = "/upload/profile/{username}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadProfile(@PathVariable String username, @RequestPart("image") MultipartFile file) {
+    public ResponseEntity<String> uploadProfilePhoto(@PathVariable String username, @RequestPart("image") MultipartFile file) {
         try{
             return new ResponseEntity<>(fileStorageService.saveProfilePic(username, file), HttpStatus.OK);
         } catch (AuthenticationException e) {
             return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-    // Download a file
+    // The client uses this to retrieve profile pics
     @GetMapping("/download/profile/{user}")
     public ResponseEntity<Resource> downloadProfilePhoto(@PathVariable String user) {
         System.out.println(user + "/" + "profile");
@@ -49,8 +49,9 @@ public class FileStorageController {
         }
     }
 
+    // The client uses this to retrieve a specific posts photo
     @GetMapping("/download/post/{author}/{postID}/{fileName}")
-    public ResponseEntity<Resource> downloadPost(@PathVariable String author, @PathVariable Long postID, @PathVariable String fileName) {
+    public ResponseEntity<Resource> downloadPostPhoto(@PathVariable String author, @PathVariable Long postID, @PathVariable String fileName) {
         System.out.println(fileName);
         Optional<File> fileOpt = fileStorageService.getFile(author , postID, fileName);
 
@@ -60,16 +61,19 @@ public class FileStorageController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    //this function doesn't really handle the file data as much as it converts it into HTTP response entity
     private ResponseEntity<Resource> loadFileFromStorage(Optional<File> fileOpt) throws IOException {
         if (fileOpt.isEmpty()) {
+            //We just return a blank picture, its easier and faster than trying to return an http error
             return ResponseEntity.noContent().build();
         }
 
         File file = fileOpt.get();
-            Resource resource = new UrlResource(file.toURI());
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Files.probeContentType(file.toPath())))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
-                    .body(resource);
+        Resource resource = new UrlResource(file.toURI());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(Files.probeContentType(file.toPath())))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .body(resource);
     }
 }

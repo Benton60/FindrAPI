@@ -92,16 +92,17 @@ public class FileStorageService {
 
     public Optional<File> getFile(String author, Long postID, String filename) {
         try {
-            // Securely build the file path
+            // The paths.get function means we don't have to think about address format
             Path filePath = Paths.get(STORAGE_DIR, author, postID.toString(), filename).normalize();
-            System.out.println("---------------------------------------------\n" + filePath + "\n");
 
             File file = filePath.toFile();
             if(file.exists() && file.isFile()){
                 return Optional.of(file);
             }else{
+                //error handling isn't implemented when the file isn't found so the api doesn't have to stall.
+                //We'd prefer to respond with a blank file rather than an error code
                 return Optional.empty();
-                }
+            }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return Optional.empty(); // Fail safely
